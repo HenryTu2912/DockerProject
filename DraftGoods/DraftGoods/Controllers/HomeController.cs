@@ -4,7 +4,8 @@ using System.Diagnostics;
 
 namespace DraftGoods.Controllers
 {
-    public class HomeController : Controller
+    public class 
+        HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 

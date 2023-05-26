@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "OIHvrHnFyOeGJnqDsF3DtSo9cSi4Dcx9bqv+9t/sO7cbI4Y9xSeO/+qtL8CxyQJjfww27CSROLjoU6xMGTwcCA==",
+  "dgSpecHash": "glRvviFrY3SMErHo1Y+6mMRubRCBYgnIbci8AW7yA3N4WWgKXAO5JTpvGRdA59pjYJ5korMNcAt+XYkZSuI43A==",
   "success": true,
-  "projectFilePath": "D:\\GitHub\\COET295\\DockerProject\\DraftGoods\\DraftGoods\\DraftGoods.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "D:\\draftgoods\\DockerProject\\DraftGoods\\DraftGoods\\DraftGoods.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mytuy\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.12\\microsoft.netcore.app.host.win-x64.6.0.12.nupkg.sha512",
+    "C:\\Users\\mytuy\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.12\\microsoft.aspnetcore.app.ref.6.0.12.nupkg.sha512",
+    "C:\\Users\\mytuy\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.12\\microsoft.windowsdesktop.app.ref.6.0.12.nupkg.sha512",
+    "C:\\Users\\mytuy\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.12\\microsoft.netcore.app.ref.6.0.12.nupkg.sha512"
+  ],
   "logs": []
 }

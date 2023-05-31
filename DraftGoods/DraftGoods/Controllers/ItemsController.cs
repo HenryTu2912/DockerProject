@@ -20,10 +20,11 @@ namespace DraftGoods.Controllers
         }
 
         // GET: Items
+        [Route("/items")]
         public async Task<IActionResult> Index()
         {
             return _context.Items != null ?
-                        View(await _context.Items.ToListAsync()) :
+                        Ok(await _context.Items.ToListAsync()) :
                         Problem("Entity set 'ApplicationDbContext.Items'  is null.");
         }
 
@@ -42,29 +43,30 @@ namespace DraftGoods.Controllers
                 return NotFound();
             }
 
-            return View(item);
+            return Ok(item);
         }
 
         // GET: Items/Create
         public IActionResult Create()
         {
-            return View();
+            return Ok();
         }
 
         // POST: Items/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price")] Item item)
+        [Route("/items")]
+        /*[ValidateAntiForgeryToken]*/
+        public async Task<IActionResult> Create([FromBody] Item item)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(item);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(Index), new { id = item.Id }, item);
             }
-            return View(item);
+            return Ok(item);
         }
 
         // GET: Items/Edit/5
@@ -80,15 +82,15 @@ namespace DraftGoods.Controllers
             {
                 return NotFound();
             }
-            return View(item);
+            return Ok(item);
         }
 
         // POST: Items/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Price")] Item item)
+        /*[ValidateAntiForgeryToken]*/
+        public async Task<IActionResult> Edit(string id, [FromBody] Item item)
         {
             if (id != item.Id)
             {
@@ -115,7 +117,7 @@ namespace DraftGoods.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(item);
+            return Ok(item);
         }
 
         // GET: Items/Delete/5
@@ -133,12 +135,13 @@ namespace DraftGoods.Controllers
                 return NotFound();
             }
 
-            return View(item);
+            return Ok(item);
         }
 
         // POST: Items/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpDelete, ActionName("Delete")]
+        [Route("/items/{id?}")]
+        /*[ValidateAntiForgeryToken]*/
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (_context.Items == null)

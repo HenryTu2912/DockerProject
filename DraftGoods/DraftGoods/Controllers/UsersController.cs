@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DraftGoods.Context;
 using DraftGoods.Models;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Security.Cryptography;
 
 namespace DraftGoods.Controllers
 {
@@ -20,10 +17,11 @@ namespace DraftGoods.Controllers
         }
 
         // GET: Users
+        [Route("/user")]
         public async Task<IActionResult> Index()
         {
               return _context.Users != null ? 
-                          View(await _context.Users.ToListAsync()) :
+                          Ok(await _context.Users.FirstOrDefaultAsync(m => m.Id == HttpContext.Session.GetString("Id"))) :
                           Problem("Entity set 'ApplicationDbContext.Users'  is null.");
         }
 
@@ -42,7 +40,7 @@ namespace DraftGoods.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            return Ok(user);
         }
 
         // GET: Users/Create
@@ -55,16 +53,29 @@ namespace DraftGoods.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Username,Password")] User user)
+        [Route("/login")]
+        /*[ValidateAntiForgeryToken]*/
+        public async Task<IActionResult> Create([FromBody] User user)
         {
-            if (ModelState.IsValid)
-            {
+           if (ModelState.IsValid)
+           {
+                byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
+                user.Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                    password: user.Password,
+                    salt: salt,
+                    prf: KeyDerivationPrf.HMACSHA256,
+                    iterationCount: 100000,
+                    numBytesRequested: 256 / 8));
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                HttpContext.Session.SetString("Id", user.Id);
+                HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetString("Password", user.Password);
+                return RedirectToAction(nameof(Index), new { id = HttpContext.Session.GetString("Id")});
+                //return CreatedAtAction(nameof(Index), new { id = user.Id }, user);
+                //return Ok(HttpContext.Session.GetString("SessionUser"));
             }
-            return View(user);
+           return Ok(user);
         }
 
         // GET: Users/Edit/5
@@ -80,14 +91,14 @@ namespace DraftGoods.Controllers
             {
                 return NotFound();
             }
-            return View(user);
+            return Ok(user);
         }
 
         // POST: Users/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        /*[ValidateAntiForgeryToken]*/
         public async Task<IActionResult> Edit(string id, [Bind("Id,Username,Password")] User user)
         {
             if (id != user.Id)
@@ -115,7 +126,7 @@ namespace DraftGoods.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return Ok(user);
         }
 
         // GET: Users/Delete/5
@@ -133,12 +144,12 @@ namespace DraftGoods.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            return Ok(user);
         }
 
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        /*[ValidateAntiForgeryToken]*/
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (_context.Users == null)

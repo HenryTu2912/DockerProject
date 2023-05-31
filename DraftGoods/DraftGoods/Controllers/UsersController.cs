@@ -10,7 +10,7 @@ namespace DraftGoods.Controllers
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+	
         public UsersController(ApplicationDbContext context)
         {
             _context = context;
@@ -20,9 +20,7 @@ namespace DraftGoods.Controllers
         [Route("/user")]
         public async Task<IActionResult> Index()
         {
-              return _context.Users != null ? 
-                          Ok(await _context.Users.FirstOrDefaultAsync(m => m.Id == HttpContext.Session.GetString("Id"))) :
-                          Problem("Entity set 'ApplicationDbContext.Users'  is null.");
+              return Ok(await _context.Users.FirstOrDefaultAsync(m => m.Id == HttpContext.Session.GetString("Id")));
         }
 
         // GET: Users/Details/5
@@ -55,27 +53,19 @@ namespace DraftGoods.Controllers
         [HttpPost]
         [Route("/login")]
         /*[ValidateAntiForgeryToken]*/
-        public async Task<IActionResult> Create([FromBody] User user)
+        public async Task<IActionResult> Login([FromBody] User user)
         {
-           if (ModelState.IsValid)
-           {
-                byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
-                user.Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                    password: user.Password,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 100000,
-                    numBytesRequested: 256 / 8));
+            if (ModelState.IsValid)
+            {
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 HttpContext.Session.SetString("Id", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetString("Password", user.Password);
                 return RedirectToAction(nameof(Index), new { id = HttpContext.Session.GetString("Id")});
-                //return CreatedAtAction(nameof(Index), new { id = user.Id }, user);
-                //return Ok(HttpContext.Session.GetString("SessionUser"));
+                /*return Ok(HttpContext.Session.GetString("Id"));*/
             }
-           return Ok(user);
+            return Ok(user);
         }
 
         // GET: Users/Edit/5

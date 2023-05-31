@@ -1,0 +1,28 @@
+version: "3"
+
+
+services:
+  Draftgoods:
+    image: postgres:latest
+    extra_hosts:
+      - 'localhost:127.0.0.1'
+    hostname: localhost
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=12345'
+      - 'POSTGRES_DB=Draftgoods'
+    restart: 'always'
+    expose:
+      - '5432'
+    volumes:
+      - ./create_table.sql:/docker-entrypoint-initdb.d/create_table.sql  
+  my_app:
+    build: .
+    depends_on:
+      - 'Draftgoods'
+    environment:
+      - 'ASPNETCORE_ENVIRONMENT=Development'
+      - 'ConnectionStrings_DefaultConnection="Server=Draftgoods;Port=5432;Database=Draftgoods;User Id=postgres;Password=12345"'
+    restart: 'on-failure:5'
+    ports:
+      - '5164:80'

@@ -1,10 +1,12 @@
 ﻿using DraftGoods.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace DraftGoods.Controllers
 {
-    public class HomeController : Controller
+    public class 
+        HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 
